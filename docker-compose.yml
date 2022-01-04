@@ -1,0 +1,67 @@
+version: "3.1"
+services:
+  qr-db:
+    container_name: qr-db
+    build: ./database
+    networks:
+      - back
+    env_file: mysql.env
+    environment:
+      - TZ=Asia/Tokyo
+    expose:
+      - "3306"
+    volumes:
+      - webform-db:/var/lib/mysql
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "500"
+    restart: always
+  qr-app:
+    container_name: qr-app
+    build: ./app
+    networks:
+      - front
+      - back
+    env_file: mysql.env
+    environment:
+      - TZ=Asia/Tokyo
+    expose:
+      - "80"
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "500"
+    restart: always
+  qr-web:
+    container_name: qr-web
+    build: ./web
+    networks:
+      - front
+    environment:
+      - TZ=Asia/Tokyo
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./web/cert:/usr/local/nginx/conf
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "500"
+    restart: always
+
+volumes:
+  webform-db:
+
+networks:
+  front:
+    driver: bridge
+  back:
+    driver: bridge
