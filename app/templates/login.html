@@ -1,0 +1,19 @@
+{% extends 'basefile/base.html' %}
+
+{% block title_tab %}
+  <title>ログイン画面</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="d-grid gap-2 col-6 mx-auto mt-5">
+  <form class="form-signin" method="POST">
+    <label for="account" class="sr-only">account</label>
+    <input type="user" id="account" class="form-control" placeholder="account" name="account" required autofocus>
+    <label for="password" class="sr-only">password</label>
+    <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
+    <button class="btn btn-primary mt-3" type="submit">ログイン</button>
+  </form>
+</div>
+
+{% endblock %}

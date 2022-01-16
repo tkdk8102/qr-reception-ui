@@ -1,0 +1,367 @@
+{% extends 'basefile/base.html' %}
+
+{% block title_tab %}
+  <title>招待者リスト</title>
+{% endblock %}
+
+{% block body %}
+
+{% if flash_msg %}
+<ul class=flashes>
+  <div class="alert alert-danger" role="alert">{{ flash_msg }}</div>
+</ul>
+{% endif %}
+
+<div class="input-group mb-3">
+  <input type="text" class="form-control" id="search_word" placeholder="Search">
+  <button type="button" class="btn btn-outline-secondary" id="search_btn">絞り込み</button>
+  <button type="button" class="btn btn-outline-secondary" id="reset_btn">全て表示</button>
+</div>
+
+<table class="table table-striped table-hover" id="guest_list">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>QR</th>
+      <th>出席</th>
+      <th>招待者</th>
+      <th>かな</th>
+      <th>関係性</th>
+      <th>お車代</th>
+      <th>備考</th>
+      <th>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_form">&#9547;</button>
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#csv_form">&#x2637;</button>
+        </div>
+      </th>
+    </tr>
+  </thead>
+  <tbody>{% for guest in guests %}
+    <tr>
+      <td id="id_{{ guest[0] }}">{{ guest[0] }}</td>
+      <td id="gid_{{ guest[0] }}"><button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#qr_show" id="{{ guest[0] }}.png" onclick="qr_show(this.id)">表示</button></td>
+      <td id="attendance_{{ guest[0] }}">{% if guest[2] %}&#9989;{% endif %}</td>
+      <td id="kanji_name_{{ guest[0] }}">{% if guest[3] %}{{ guest[3] }}{% endif %}</td>
+      <td id="kana_name_{{ guest[0] }}">{% if guest[4] %}{{ guest[4] }}{% endif %}</td>
+      <td id="relation_{{ guest[0] }}">{% if guest[5] %}{{ guest[5] }}{% endif %}</td>
+      <td id="reward_{{ guest[0] }}">{% if guest[6] %}{{ guest[6] }}{% endif %}</td>
+      <td id="note_{{ guest[0] }}">{% if guest[7] %}{{ guest[7] }}{% endif %}</td>
+      <td>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit_form" id="{{ guest[0] }}" onclick="mod_editor(this.id)">&#x270D;</button>
+      </td>
+    </tr>{% endfor %}
+  </tbody>
+<table class="table table-striped table-hover">
+
+<!----------------------- テーブル本体ここまで ------------------------>
+
+<!-- 編集ボタン Modal -->
+<div class="modal fade" id="edit_form" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal ヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit_modal">編集</h5>
+        <button type="button" class="btn btn-outline-danger" id="del_guest">データ削除</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
+      </div>
+      <form id="editor">
+        <input type="hidden" name="id" id="id_edit" value="">
+        <!-- Modal ボディー -->
+        <div class="modal-body">
+          <label>出欠席</label>
+          <div class="form-group">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="attendance" id="attendance_edit_1" value="1">
+              <label class="form-check-label" for="attendance_edit_1">出席</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="attendance" id="attendance_edit_0" value="0">
+              <label class="form-check-label" for="attendance_edit_0">欠席</label>
+            </div>
+          </div>
+          <label for="kanji_name_edit">招待者</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="kanji_name" id="kanji_name_edit" value="">
+          </div>
+          <label for="kana_name_edit">かな</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="kana_name" id="kana_name_edit" value="">
+          </div>
+          <label for="relation_edit">関係性</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="relation" id="relation_edit" value="">
+          </div>
+          <label for="reward_edit">お車代</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="reward" id="reward_edit" value="">
+          </div>
+          <label for="note_edit">備考</label>
+          <div class="form-group">
+            <textarea class="form-control" id="note_edit" rows="3"></textarea>
+          </div>
+        </div>
+        <!-- Modal フッター -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="edit_guest">登録</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 追加ボタン Modal -->
+<div class="modal fade" id="add_form" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal ヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="add_modal">追加</h5>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
+      </div>
+      <form id="adder">
+        <!-- Modal ボディー -->
+        <div class="modal-body">
+          <label for="kanji_name_add">招待者</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="kanji_name" id="kanji_name_add" value="">
+          </div>
+          <label for="kana_name_add">かな</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="kana_name" id="kana_name_add" value="">
+          </div>
+          <label for="relation_add">関係性</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="relation" id="relation_add" value="">
+          </div>
+          <label for="reward_add">お車代</label>
+          <div class="form-group">
+            <input type="text" class="form-control" name="reward" id="reward_add" value="">
+          </div>
+          <label for="note_add">備考</label>
+          <div class="form-group">
+            <textarea class="form-control" id="note_add" rows="3"></textarea>
+          </div>
+        </div>
+        <!-- Modal フッター -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="add_guest">登録</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- QR表示 Modal -->
+<div class="modal fade" id="qr_show">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal ヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="qr_modal">QRコード</h5>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
+      </div>
+      <!-- Modal ボディー -->
+      <div class="modal-body d-flex align-items-center justify-content-center">
+        <div id="qr_src"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- アップロードボタン Modal -->
+<div class="modal fade" id="csv_form" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal ヘッダー -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="up_modal">CSV取り込み</h5>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
+      </div>
+      <form id="csv_input">
+        <!-- Modal ボディー -->
+        <div class="d-flex justify-content-xxl-center">
+          <div class="my-3">
+            <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv">
+          </div>
+        </div>
+        <!-- Modal フッター -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" id="csv_guest" onclick="upload_file()">アップロード</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!----------------------- モーダルここまで ------------------------>
+
+<script type="text/javascript">
+
+function mod_editor(id) {
+  document.getElementById("id_edit").value = id
+  document.getElementById("edit_modal").innerText = "ID: " + id + " 編集"
+  let attendance = document.getElementById("attendance_" + id).innerText;
+  if (attendance){
+    document.getElementById("attendance_edit_1").checked = true;
+  }else{
+    document.getElementById("attendance_edit_0").checked = true;
+  }
+  document.getElementById("kanji_name_edit").value = document.getElementById("kanji_name_" + id).innerText
+  document.getElementById("kana_name_edit").value = document.getElementById("kana_name_" + id).innerText
+  document.getElementById("relation_edit").value = document.getElementById("relation_" + id).innerText
+  document.getElementById("reward_edit").value = document.getElementById("reward_" + id).innerText
+  document.getElementById("note_edit").value = document.getElementById("note_" + id).innerText
+};
+
+function qr_show(qr) {
+  document.getElementById("qr_modal").innerText = "QRコード: " + qr;
+  document.getElementById("qr_src").innerHTML =
+    '<img src="/qr/' + qr + '" class="img-thumbnail">';
+}
+
+$('#qr_show').on('hidden.bs.modal', function () {
+  window.location.reload(true); // QR表示モーダルが閉じられたら更新する
+})
+
+$('#edit_guest').on('click', function() {
+  var id = $('#id_edit').val();
+  var attendance = $('input:radio[name="attendance"]:checked').val();
+  var kanji_name = $('#kanji_name_edit').val();
+  var kana_name = $('#kana_name_edit').val();
+  var relation = $('#relation_edit').val();
+  var reward = $('#reward_edit').val();
+  var note = $('#note_edit').val();
+  $.ajax({
+    url: "{{ url_for('edit') }}",
+    type: "POST",
+    dataType: "text",
+    data: {
+      id: id,
+      attendance: attendance,
+      kanji_name: kanji_name,
+      kana_name: kana_name,
+      relation: relation,
+      reward: reward,
+      note: note
+    }
+  }).done(function(data) {
+    // 通信成功時の処理
+    window.location.reload(true)
+  }).fail(function(data) {
+    // 通信失敗時の処理
+    alert('データベースの更新に失敗しました')
+  }).always(function(data) {
+    // 常に実行する処理
+    $("#edit_form").modal('hide');
+  });
+});
+
+$('#add_guest').on('click', function() {
+  var kanji_name = $('#kanji_name_add').val();
+  var kana_name = $('#kana_name_add').val();
+  var relation = $('#relation_add').val();
+  var reward = $('#reward_add').val();
+  var note = $('#note_add').val();
+  $.ajax({
+    url: "{{ url_for('add') }}",
+    type: "POST",
+    dataType: "text",
+    data: {
+      kanji_name: kanji_name,
+      kana_name: kana_name,
+      relation: relation,
+      reward: reward,
+      note: note
+    }
+  }).done(function(data) {
+    // 通信成功時の処理
+    window.location.reload(true)
+  }).fail(function(data) {
+    // 通信失敗時の処理
+    alert('データベースの更新に失敗しました')
+  }).always(function(data) {
+    // 常に実行する処理
+    $("#add_form").modal('hide');
+  });
+});
+
+$('#del_guest').on('click', function() {
+  var ret = window.confirm("データを削除します");
+  if (!ret) {
+      return
+  }
+  var id = $('#id_edit').val();
+  $.ajax({
+    url: "{{ url_for('delete') }}",
+    type: "POST",
+    dataType: "text",
+    data: {
+      id: id
+    }
+  }).done(function(data) {
+    // 通信成功時の処理
+    window.location.reload(true)
+  }).fail(function(data) {
+    // 通信失敗時の処理
+    alert('データベースの更新に失敗しました')
+  }).always(function(data) {
+    // 常に実行する処理
+    $("#edit_form").modal('hide');
+  });
+});
+
+function upload_file() {
+  const tmp_file = document.getElementById('csv_file');
+  if (!tmp_file.value) {
+    alert('ファイルが選択されていません')
+    return;
+  }
+  const fd = new FormData(document.getElementById('csv_input'));
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", "{{ url_for('upload') }}");
+  xhr.onload = function() {
+    if (/^[23]..$/.test(xhr.status)) {
+      window.location.reload(true)
+    }else{
+      alert('データベースの更新に失敗しました')
+    }
+  }
+  xhr.onerror = function() {
+    alert('アップロードに失敗しました')
+  }
+  xhr.send(fd);
+  $("#csv_form").modal('hide');
+
+  tmp_file.value = tmp_file.defaultValue;
+  tmp_file.dispatchEvent(new Event('change'));
+}
+
+$(function(){
+  $('#search_btn').bind("click",function(){
+    var re = new RegExp($('#search_word').val());
+    $('#guest_list tbody tr').each(function(){
+      var tr = $(this);
+      tr.hide();
+      $('td', this).each(function(){
+        var txt = $(this).html();
+        if(txt.match(re) != null){
+          tr.show();
+        }
+      });
+    });
+  });
+
+  $('#reset_btn').bind("click",function(){
+    $('#search_word').val('');
+    $('#guest_list tr').show();
+  });
+});
+
+</script>
+
+{% endblock %}

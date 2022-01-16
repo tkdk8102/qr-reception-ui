@@ -1,0 +1,126 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.reader {
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.reader-video {
+    background-color: #000;
+    height: 100%;
+    object-fit: fill;
+}
+
+.reticle {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    z-index: 1;
+}
+
+@media (orientation: portrait){
+    .reticle-box {
+        width: 70vw;
+        height: 70vw;
+        box-shadow: 0 0 0 1px #fff, 0 0 0 3px #000, 0 0 0 4px #fff;
+        /* -webkit-animation: 0.8s linear 0s infinite alternate move_reticle; */
+        /* animation: 0.8s linear 0s infinite alternate move_reticle; */
+    }
+
+    @-webkit-keyframes move_reticle {
+        from {
+            width: 70vw;
+            height: 70vw;
+        }
+        to {
+            width: 75vw;
+            height: 75vw;
+        }
+    }
+    @keyframes move_reticle {
+        from {
+            width: 70vw;
+            height: 70vw;
+        }
+        to {
+            width: 75vw;
+            height: 75vw;
+        }
+    }
+}
+@media (orientation: landscape){
+    .reticle-box {
+        width: 60vh;
+        height: 60vh;
+        box-shadow: 0 0 0 1px #fff, 0 0 0 3px #000, 0 0 0 4px #fff;
+        /* -webkit-animation: 0.8s linear 0s infinite alternate move_reticle; */
+        /* animation: 0.8s linear 0s infinite alternate move_reticle; */
+    }
+
+    @-webkit-keyframes move_reticle {
+        from {
+            width: 60vh;
+            height: 60vh;
+        }
+        to {
+            width: 65vh;
+            height: 65vh;
+        }
+    }
+    @keyframes move_reticle {
+        from {
+            width: 60vh;
+            height: 60vh;
+        }
+        to {
+            width: 65vh;
+            height: 65vh;
+        }
+    }
+}
+
+.unsupported {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100%;
+    background: #000;
+    color: #fff;
+    z-index: 999;
+}
+
+.unsupported.is-show {
+    display: flex;
+}
+
+.unsupported-title {
+    font-weight: bold;
+    font-size: 2em;
+}

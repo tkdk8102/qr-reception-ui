@@ -1,19 +1,19 @@
 CREATE DATABASE users;
 USE users;
 
-CREATE TABLE guest (
+CREATE TABLE guests (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    gid VARCHAR(32) NOT NULL,
+    attendance TINYINT(1),
     kanji_name VARCHAR(30),
     kana_name VARCHAR(30),
     relation LONGTEXT,
-    reward BIT(1) NOT NULL,
-    attendance BIT(1) NOT NULL,
-    uuid VARCHAR(32) NOT NULL
-    note LONGTEXT,
+    reward LONGTEXT,
+    note LONGTEXT
 );
 
-CREATE TABLE IF NOT EXISTS host (
-    account,
-    password,
-    salt
+CREATE TABLE hosts (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    account VARCHAR(30) UNIQUE,
+    password VARCHAR(60)
 );

@@ -1,0 +1,49 @@
+{% extends 'basefile/base.html' %}
+
+{% block title_tab %}
+  <title>受付用QRコード読み取り</title>
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='camera.css') }}">
+{% endblock %}
+
+{% block body %}
+
+  <div class="reader">
+    <video id="js-video" class="reader-video" autoplay playsinline></video>
+  </div>
+
+  <div class="reticle">
+    <div class="reticle-box"></div>
+  </div>
+
+  <div style="display: none">
+    <canvas id="js-canvas"></canvas>
+  </div>
+
+  <div id="js-unsupported" class="unsupported">
+    <p class="unsupported-title">Sorry!</p>
+    <p>Unsupported browser</p>
+  </div>
+
+  <!-- 読み取り結果表示 Modal -->
+  <div class="modal fade" id="result_modal">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <!-- Modal ボディー -->
+        <div class="modal-body text-center fs-1">
+          <p id="name"></p>
+          <p id="comment"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio src="{{ url_for('static', filename='決定、ボタン押下4.mp3') }}" id="success_audio"></audio>
+  <audio src="{{ url_for('static', filename='警告音1.mp3') }}" id="alert_audio"></audio>
+
+  <script src="{{ url_for('static', filename='camera.js') }}"></script>
+  <script src="{{ url_for('static', filename='jsQR.js') }}"></script>
+
+{% endblock %}

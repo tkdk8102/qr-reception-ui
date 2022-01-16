@@ -1,0 +1,26 @@
+{% extends 'basefile/base.html' %}
+
+{% block title_tab %}
+  <title>メニュー</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="d-grid gap-2 col-6 mx-auto mt-5">
+  <a href="{{ url_for('reader', camera='front') }}" class="btn btn-primary">QRコード読み取り<br>(フロントカメラ)</a>
+  <a href="{{ url_for('reader', camera='rear') }}" class="btn btn-primary">QRコード読み取り<br>(リアカメラ)</a>
+</div>
+
+<div class="d-grid gap-2 col-6 mx-auto mt-4">
+  <a href="{{ url_for('guests') }}" class="btn btn-info">招待者一覧</a>
+</div>
+
+<div class="d-grid gap-2 col-6 mx-auto mt-4">
+  <a href="{{ url_for('download') }}" class="btn btn-outline-dark">QRコード全件<br>ダウンロード</a>
+</div>
+
+<div class="d-grid gap-2 col-6 mx-auto mt-4 mb-5">
+  <a href="{{ url_for('logout') }}" class="btn btn-secondary">ログアウト</a>
+</div>
+
+{% endblock %}
