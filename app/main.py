@@ -48,6 +48,12 @@ def before_request():
     app.permanent_session_lifetime = datetime.timedelta(hours=12)
     session.modified = True
 
+@app.after_request
+def after_request(response):
+    # クリックジャッキング対策
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    return response
+
 @app.route('/qr/<path:filename>')
 @login_required
 def qr(filename):
