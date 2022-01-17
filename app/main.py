@@ -95,6 +95,7 @@ def result(gid=None):
     guests = db_manager.Connector()
     guests.connect(**db_config.users_db, table='guests')
     res = guests.update_attend(str(request.form['gid']))
+    guests.close()
     return jsonify({'kanji_name': res})
 
 @app.route('/guests', methods=['GET'])
