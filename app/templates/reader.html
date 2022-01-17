@@ -29,7 +29,7 @@
 
   <!-- 読み取り結果表示 Modal -->
   <div class="modal fade" id="result_modal">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <!-- Modal ボディー -->
         <div class="modal-body text-center fs-1">
@@ -45,5 +45,7 @@
 
   <script src="{{ url_for('static', filename='camera.js') }}"></script>
   <script src="{{ url_for('static', filename='jsQR.js') }}"></script>
+
+  <input type="hidden" id="csrf_token" name="csrf_token" value="{{ csrf_token() }}"/>
 
 {% endblock %}

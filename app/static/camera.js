@@ -21,6 +21,7 @@ SQR.reader = (() => {
      * videoの出力をCanvasに描画して画像化 jsQRを使用してQR解析
      */
     const checkQRUseLibrary = () => {
+        const csrf_token = $('#csrf_token').val();
         const canvas = document.querySelector('#js-canvas')
         const ctx = canvas.getContext('2d')
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
@@ -33,7 +34,8 @@ SQR.reader = (() => {
                 type: "POST",
                 dataType: "json",
                 data: {
-                    gid: code.data
+                    gid: code.data,
+                    csrf_token: csrf_token
                 }
             }).done(function(data) {
                 // 通信成功時の処理
@@ -57,6 +59,7 @@ SQR.reader = (() => {
      * videoの出力をBarcodeDetectorを使用してQR解析
      */
     const checkQRUseBarcodeDetector = () => {
+        const csrf_token = $('#csrf_token').val();
         const barcodeDetector = new BarcodeDetector()
         barcodeDetector
             .detect(video)
@@ -68,7 +71,8 @@ SQR.reader = (() => {
                             type: "POST",
                             dataType: "json",
                             data: {
-                                gid: barcode.rawValue
+                                gid: barcode.rawValue,
+                                csrf_token: csrf_token
                             }
                         }).done(function(data) {
                             // 通信成功時の処理
