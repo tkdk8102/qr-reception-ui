@@ -2,6 +2,7 @@ from flask import Flask, flash, render_template, request, redirect, url_for, ses
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from flask_wtf.csrf import CSRFProtect
 import shutil
 import os
 import secrets
@@ -17,6 +18,7 @@ from library import db_config
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = secrets.token_hex(32)
 app.config["JSON_AS_ASCII"] = False
+csrf = CSRFProtect(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{user}:{passwd}@{host}:{port}/{db}?charset={charset}'.format(**db_config.users_db)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

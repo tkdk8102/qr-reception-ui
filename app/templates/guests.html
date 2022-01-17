@@ -67,6 +67,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
       </div>
       <form id="editor">
+        <input type="hidden" id="editor_csrf" name="csrf_token" value="{{ csrf_token() }}"/>
         <input type="hidden" name="id" id="id_edit" value="">
         <!-- Modal ボディー -->
         <div class="modal-body">
@@ -122,6 +123,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
       </div>
       <form id="adder">
+        <input type="hidden" id="adder_csrf" name="csrf_token" value="{{ csrf_token() }}"/>
         <!-- Modal ボディー -->
         <div class="modal-body">
           <label for="kanji_name_add">招待者</label>
@@ -182,6 +184,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">&#10005;</button>
       </div>
       <form id="csv_input">
+        <input type="hidden" id="upload_csrf" name="csrf_token" value="{{ csrf_token() }}"/>
         <!-- Modal ボディー -->
         <div class="d-flex justify-content-xxl-center">
           <div class="my-3">
@@ -236,6 +239,7 @@ $('#edit_guest').on('click', function() {
   var relation = $('#relation_edit').val();
   var reward = $('#reward_edit').val();
   var note = $('#note_edit').val();
+  var csrf_token = $('#editor_csrf').val();
   $.ajax({
     url: "{{ url_for('edit') }}",
     type: "POST",
@@ -247,7 +251,8 @@ $('#edit_guest').on('click', function() {
       kana_name: kana_name,
       relation: relation,
       reward: reward,
-      note: note
+      note: note,
+      csrf_token: csrf_token
     }
   }).done(function(data) {
     // 通信成功時の処理
@@ -267,6 +272,7 @@ $('#add_guest').on('click', function() {
   var relation = $('#relation_add').val();
   var reward = $('#reward_add').val();
   var note = $('#note_add').val();
+  var csrf_token = $('#adder_csrf').val();
   $.ajax({
     url: "{{ url_for('add') }}",
     type: "POST",
@@ -276,7 +282,8 @@ $('#add_guest').on('click', function() {
       kana_name: kana_name,
       relation: relation,
       reward: reward,
-      note: note
+      note: note,
+      csrf_token: csrf_token
     }
   }).done(function(data) {
     // 通信成功時の処理
@@ -296,12 +303,14 @@ $('#del_guest').on('click', function() {
       return
   }
   var id = $('#id_edit').val();
+  var csrf_token = $('#editor_csrf').val();
   $.ajax({
     url: "{{ url_for('delete') }}",
     type: "POST",
     dataType: "text",
     data: {
-      id: id
+      id: id,
+      csrf_token: csrf_token
     }
   }).done(function(data) {
     // 通信成功時の処理
@@ -316,6 +325,7 @@ $('#del_guest').on('click', function() {
 });
 
 function upload_file() {
+  var csrf_token = $('#upload_csrf').val();
   const tmp_file = document.getElementById('csv_file');
   if (!tmp_file.value) {
     alert('ファイルが選択されていません')
@@ -334,6 +344,7 @@ function upload_file() {
   xhr.onerror = function() {
     alert('アップロードに失敗しました')
   }
+  fd.append('csrf_token', csrf_token)
   xhr.send(fd);
   $("#csv_form").modal('hide');
 

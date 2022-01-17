@@ -13,6 +13,7 @@
     <label for="password" class="sr-only">password</label>
     <input type="password" id="password" class="form-control" placeholder="password" name="password" required>
     <button class="btn btn-primary mt-3" type="submit">ログイン</button>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   </form>
 </div>
 
