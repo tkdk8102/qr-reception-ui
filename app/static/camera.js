@@ -39,11 +39,11 @@ SQR.reader = (() => {
                 }
             }).done(function(data) {
                 // 通信成功時の処理
-                SQR.modal.open(data) // モーダルを開き 4秒後に閉じる
+                SQR.modal.open(data) // モーダルを開き 5秒後に閉じる
                 setTimeout(() => {
                     $('#result_modal').modal('hide');
                     SQR.reader.findQR() // QR解析を再開
-                }, 4000)
+                }, 5000)
             }).fail(function(data) {
                 // 通信失敗時の処理
                 $("#alert_audio")[0].play();
@@ -76,11 +76,11 @@ SQR.reader = (() => {
                             }
                         }).done(function(data) {
                             // 通信成功時の処理
-                            SQR.modal.open(data.kanji_name) // モーダルを開き 4秒後に閉じる
+                            SQR.modal.open(data.kanji_name) // モーダルを開き 5秒後に閉じる
                             setTimeout(() => {
                                 $('#result_modal').modal('hide');
                                 SQR.reader.findQR() // QR解析を再開
-                            }, 4000)
+                            }, 5000)
                         }).fail(function(data) {
                             // 通信失敗時の処理
                             $("#alert_audio")[0].play();
@@ -161,7 +161,8 @@ function getParam(name, url) {
 
 SQR.modal = (() => {
     var name = document.getElementById('name')
-    var comment = document.getElementById('comment')
+    var comment1 = document.getElementById('comment1')
+    var comment2 = document.getElementById('comment2')
 
     /**
      * 取得した文字列を入れ込んでモーダルを開く
@@ -170,11 +171,13 @@ SQR.modal = (() => {
         if (kanji_name) {
             $("#success_audio")[0].play();
             name.innerText = kanji_name + ' 様'
-            comment.innerText = 'ご出席いただきありがとうございます'
+            comment1.innerText = 'ご出席いただき'
+            comment2.innerText = 'ありがとうございます'
         }else{
             $("#alert_audio")[0].play();
-            name.innerText = '読み取りエラーです'
-            comment.innerText = '受付にてご記帳をお願いいたします'
+            name.innerText = '\u{26a0}読み取りエラーです\u{26a0}'
+            comment1.innerText = '受付にてご記帳を'
+            comment2.innerText = 'お願いいたします'
         }
         $('#result_modal').modal('show');
     }
