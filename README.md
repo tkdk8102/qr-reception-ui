@@ -17,7 +17,7 @@
     `docker-compose up -d --build`
 4. 管理ユーザの追加    
     `docker-compose exec qr-app python add_host_account.py -a $任意のアカウント名$ -p $任意のパスワード$`
-5. アクセス確認    
+5. アクセス確認(スマホ・タブレットで Chrome 推奨)    
     `https://$host$`
 
 - 停止    
