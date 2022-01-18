@@ -6,12 +6,6 @@
 
 {% block body %}
 
-{% if flash_msg %}
-<ul class=flashes>
-  <div class="alert alert-danger" role="alert">{{ flash_msg }}</div>
-</ul>
-{% endif %}
-
 <div class="input-group mb-3">
   <input type="text" class="form-control" id="search_word" placeholder="Search">
   <button type="button" class="btn btn-outline-secondary" id="search_btn">絞り込み</button>

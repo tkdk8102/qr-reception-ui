@@ -99,7 +99,7 @@ def reader():
 
 @app.route('/result', methods=['POST'])
 @login_required
-def result(gid=None):
+def result():
     guests = db_manager.Connector()
     guests.connect(**db_config.users_db, table='guests')
     res = guests.update_attend(str(request.form['gid']))
