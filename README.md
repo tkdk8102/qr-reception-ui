@@ -2,7 +2,7 @@
 結婚式当日の受付で、スマートフォンやタブレットのカメラでQRコードを読み取り、出席登録を行うためのWebUI
 
 ## 必要環境
-- Doker Engine
+- Docker Engine
     - https://docs.docker.com/engine/install/
 - Docker Compose
     - https://docs.docker.com/compose/install/
