@@ -31,6 +31,9 @@ login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
 
+# QRコード保存ディレクトリ
+qr_dir = './protected'
+
 class User(UserMixin, db.Model):
     __tablename__ = 'hosts'
     id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +47,7 @@ def load_user(id):
 @app.before_request
 def before_request():
     # QRコード置き場がなければ作る
-    os.makedirs('./protected', exist_ok=True)
+    os.makedirs(qr_dir, exist_ok=True)
     # リクエストのたびにセッションの寿命を更新する
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(hours=12)
@@ -174,25 +177,29 @@ def delete():
 @app.route('/download', methods=['GET'])
 @login_required
 def download():
-    with tempfile.TemporaryDirectory() as temp_dir:
-        out_dir = temp_dir + '/out'
-        os.makedirs(out_dir)
-        qrs = os.listdir('protected')
-        # 招待者名の取得
-        guests = db_manager.Connector()
-        guests.connect(**db_config.users_db, table='guests')
-        for qr in qrs:
-            guest_id, png = os.path.splitext(qr)
-            kanji = guests.get_name(
-                guest_id = guest_id
-            )
-            # ファイル名を 招待者様_ID.png に変更して ZIP
-            filename = kanji.replace(' ', '_') + '様_' + str(guest_id) + png
-            shutil.copy('protected/' + qr, out_dir + '/' + filename)
-        guests.close()
-        shutil.make_archive(temp_dir + '/qr_codes', 'zip', root_dir=out_dir)
-        return send_from_directory(temp_dir, 'qr_codes.zip', as_attachment=True,
-                    attachment_filename='qr_codes_'+str(uuid.uuid4())[-6:]+'.zip')
+    if sum(os.path.isfile(os.path.join(qr_dir, name)) for name in os.listdir(qr_dir)):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            out_dir = temp_dir + '/out'
+            os.makedirs(out_dir)
+            qrs = os.listdir(qr_dir)
+            # 招待者名の取得
+            guests = db_manager.Connector()
+            guests.connect(**db_config.users_db, table='guests')
+            for qr in qrs:
+                guest_id, png = os.path.splitext(qr)
+                kanji = guests.get_name(
+                    guest_id = guest_id
+                )
+                # ファイル名を 招待者様_ID.png に変更して ZIP
+                filename = kanji.replace(' ', '_') + '様_' + str(guest_id) + png
+                shutil.copy('protected/' + qr, out_dir + '/' + filename)
+            guests.close()
+            shutil.make_archive(temp_dir + '/qr_codes', 'zip', root_dir=out_dir)
+            return send_from_directory(temp_dir, 'qr_codes.zip', as_attachment=True,
+                        attachment_filename='qr_codes_'+str(uuid.uuid4())[-6:]+'.zip')
+    else:
+        flash('No QR code available.')
+        return redirect(url_for('index'))
 
 @app.route('/upload', methods=['POST'])
 @login_required
