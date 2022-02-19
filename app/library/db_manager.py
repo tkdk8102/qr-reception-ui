@@ -38,7 +38,7 @@ class Connector():
     def get_guest(self):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "SELECT * FROM {}".format(self.__table)
+            query = f"SELECT * FROM {self.__table}"
             cursor.execute(query)
             data = cursor.fetchall()
             return data
@@ -47,7 +47,7 @@ class Connector():
         guest_id = int(guest_id)
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "SELECT kanji_name FROM {} WHERE id = %s".format(self.__table)
+            query = f"SELECT kanji_name FROM {self.__table} WHERE id = %s"
             cursor.execute(query, (guest_id,))
             name = cursor.fetchone()
             return name[0]
@@ -57,7 +57,7 @@ class Connector():
             if not parent_id:
                 parent_id = None
             cursor = self.__conn.cursor()
-            query = "UPDATE {} SET attendance = %s, kanji_name = %s, kana_name = %s, relation = %s, reward = %s, note = %s, parent_id = %s WHERE id = %s".format(self.__table)
+            query = f"UPDATE {self.__table} SET attendance = %s, kanji_name = %s, kana_name = %s, relation = %s, reward = %s, note = %s, parent_id = %s WHERE id = %s"
             cursor.execute(query, (attendance, kanji_name, kana_name, relation, reward, note, parent_id, guest_id))
             self.__conn.commit()
 
@@ -66,7 +66,7 @@ class Connector():
             if not parent_id:
                 parent_id = None
             cursor = self.__conn.cursor()
-            query = "INSERT INTO {} (id, gid, kanji_name, kana_name, relation, reward, note, parent_id) VALUES (LAST_INSERT_ID(), %s, %s, %s, %s, %s, %s, %s)".format(self.__table)
+            query = f"INSERT INTO {self.__table} (id, gid, kanji_name, kana_name, relation, reward, note, parent_id) VALUES (LAST_INSERT_ID(), %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (gid, kanji_name, kana_name, relation, reward, note, parent_id))
             self.__conn.commit()
             cursor = self.__conn.cursor()
@@ -100,7 +100,7 @@ class Connector():
     def del_guest(self, guest_id):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "DELETE FROM {} WHERE id = %s".format(self.__table)
+            query = f"DELETE FROM {self.__table} WHERE id = %s"
             cursor.execute(query, (guest_id,))
             query = f"UPDATE {self.__table} SET parent_id = NULL WHERE parent_id = %s"
             cursor.execute(query, (guest_id,))
@@ -109,26 +109,26 @@ class Connector():
     def add_host(self, account, password):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "INSERT INTO {} (account, password) VALUES (%s, %s) ON DUPLICATE KEY UPDATE password = %s".format(self.__table)
+            query = f"INSERT INTO {self.__table} (account, password) VALUES (%s, %s) ON DUPLICATE KEY UPDATE password = %s"
             cursor.execute(query, (account, password, password))
             self.__conn.commit()
 
     def del_host(self, account):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "DELETE FROM {} WHERE account = %s".format(self.__table)
+            query = f"DELETE FROM {self.__table} WHERE account = %s"
             cursor.execute(query, (account,))
             self.__conn.commit()
 
     def update_attend(self, gid):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = "SELECT kanji_name FROM {} WHERE gid = %s".format(self.__table)
+            query = f"SELECT kanji_name FROM {self.__table} WHERE gid = %s"
             cursor.execute(query, (gid,))
             if cursor.rowcount:
                 name = cursor.fetchone()
                 cursor = self.__conn.cursor()
-                query = "UPDATE {} SET attendance = %s WHERE gid = %s".format(self.__table)
+                query = f"UPDATE {self.__table} SET attendance = %s WHERE gid = %s"
                 cursor.execute(query, (1, gid,))
                 self.__conn.commit()
                 return name[0]
