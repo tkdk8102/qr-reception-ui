@@ -52,28 +52,57 @@ class Connector():
             name = cursor.fetchone()
             return name[0]
 
-    def edit_guest(self, guest_id, attendance, kanji_name, kana_name, relation, reward, note):
+    def edit_guest(self, guest_id, attendance, kanji_name, kana_name, relation, reward, note, parent_id):
         if self.__conn:
+            if not parent_id:
+                parent_id = None
             cursor = self.__conn.cursor()
-            query = "UPDATE {} SET attendance = %s, kanji_name = %s, kana_name = %s, relation = %s, reward = %s, note = %s WHERE id = %s".format(self.__table)
-            cursor.execute(query, (attendance, kanji_name, kana_name, relation, reward, note, guest_id,))
+            query = "UPDATE {} SET attendance = %s, kanji_name = %s, kana_name = %s, relation = %s, reward = %s, note = %s, parent_id = %s WHERE id = %s".format(self.__table)
+            cursor.execute(query, (attendance, kanji_name, kana_name, relation, reward, note, parent_id, guest_id))
             self.__conn.commit()
 
-    def add_guest(self, gid, kanji_name, kana_name, relation='', reward='', note=''):
+    def add_guest(self, gid, kanji_name, kana_name, relation='', reward='', note='', parent_id=None):
         if self.__conn:
+            if not parent_id:
+                parent_id = None
             cursor = self.__conn.cursor()
-            query = "INSERT INTO {} (id, gid, kanji_name, kana_name, relation, reward, note) VALUES (LAST_INSERT_ID(), %s, %s, %s, %s, %s, %s)".format(self.__table)
-            cursor.execute(query, (gid, kanji_name, kana_name, relation, reward, note,))
+            query = "INSERT INTO {} (id, gid, kanji_name, kana_name, relation, reward, note, parent_id) VALUES (LAST_INSERT_ID(), %s, %s, %s, %s, %s, %s, %s)".format(self.__table)
+            cursor.execute(query, (gid, kanji_name, kana_name, relation, reward, note, parent_id))
             self.__conn.commit()
             cursor = self.__conn.cursor()
             cursor.execute('SELECT LAST_INSERT_ID()')
             last_id = cursor.fetchone()
             return last_id[0]
 
+    def check_parent(self, parent_id, guest_id=None):
+        if self.__conn:
+            cursor = self.__conn.cursor()
+            query = f"SELECT id FROM {self.__table}"
+            cursor.execute(query)
+            if cursor.rowcount: # 初期登録時は許可
+                query = f"SELECT id FROM {self.__table} WHERE id = %s"
+                cursor.execute(query, (parent_id,))
+                if not cursor.rowcount: # 指定IDが存在しない場合は拒否
+                    return False
+                query = f"SELECT id FROM {self.__table} WHERE id = %s AND parent_id IS NOT NULL"
+                cursor.execute(query, (parent_id,))
+                if cursor.rowcount: # 指定IDが既に連名の場合は拒否
+                    return False
+                if guest_id:
+                    if guest_id == parent_id: # 自身を自身の筆頭に指定した場合は拒否
+                        return False
+                    query = f"SELECT id FROM {self.__table} WHERE parent_id = %s"
+                    cursor.execute(query, (guest_id,))
+                    if cursor.rowcount: # 自身が既に筆頭の場合は拒否
+                        return False
+            return True
+
     def del_guest(self, guest_id):
         if self.__conn:
             cursor = self.__conn.cursor()
             query = "DELETE FROM {} WHERE id = %s".format(self.__table)
+            cursor.execute(query, (guest_id,))
+            query = f"UPDATE {self.__table} SET parent_id = NULL WHERE parent_id = %s"
             cursor.execute(query, (guest_id,))
             self.__conn.commit()
 

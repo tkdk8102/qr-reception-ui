@@ -124,15 +124,19 @@ def guests():
 def edit():
     guests = db_manager.Connector()
     guests.connect(**db_config.users_db, table='guests')
-    guests.edit_guest(
-        guest_id   = request.form['id'],
-        attendance = request.form['attendance'],
-        kanji_name = request.form['kanji_name'],
-        kana_name  = request.form['kana_name'],
-        relation   = request.form['relation'],
-        reward     = request.form['reward'],
-        note       = request.form['note']
-    )
+    if bool(request.form['parent_id']) and not guests.check_parent(request.form['parent_id'], request.form['id']):
+        flash('ID specification is invalid.')
+    else:
+        guests.edit_guest(
+            guest_id   = request.form['id'],
+            attendance = request.form['attendance'],
+            kanji_name = request.form['kanji_name'],
+            kana_name  = request.form['kana_name'],
+            relation   = request.form['relation'],
+            reward     = request.form['reward'],
+            note       = request.form['note'],
+            parent_id  = request.form['parent_id']
+        )
     guests.close()
     return redirect(url_for('guests'))
 
@@ -141,21 +145,25 @@ def edit():
 def add():
     guests = db_manager.Connector()
     guests.connect(**db_config.users_db, table='guests')
-    gid = uuid.uuid4().hex
-    last_id = guests.add_guest(
-        gid        = gid,
-        kanji_name = request.form['kanji_name'],
-        kana_name  = request.form['kana_name'],
-        relation   = request.form['relation'],
-        reward     = request.form['reward'],
-        note       = request.form['note']
-    )
+    if bool(request.form['parent_id']) and not guests.check_parent(request.form['parent_id']):
+        flash('ID specification is invalid.')
+    else:
+        gid = uuid.uuid4().hex
+        last_id = guests.add_guest(
+            gid        = gid,
+            kanji_name = request.form['kanji_name'],
+            kana_name  = request.form['kana_name'],
+            relation   = request.form['relation'],
+            reward     = request.form['reward'],
+            note       = request.form['note'],
+            parent_id  = request.form['parent_id']
+        )
+        # qrコード生成
+        qr = qrcode.QRCode()
+        qr.add_data(gid)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save('protected/' + str(last_id) + '.png')
     guests.close()
-    # qrコード生成
-    qr = qrcode.QRCode()
-    qr.add_data(gid)
-    img = qr.make_image(fill_color="black", back_color="white")
-    img.save('protected/' + str(last_id) + '.png')
 
     return redirect(url_for('guests'))
 

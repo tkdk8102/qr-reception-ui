@@ -9,7 +9,8 @@ CREATE TABLE guests (
     kana_name VARCHAR(30),
     relation LONGTEXT,
     reward LONGTEXT,
-    note LONGTEXT
+    note LONGTEXT,
+    parent_id INT
 );
 
 CREATE TABLE hosts (
