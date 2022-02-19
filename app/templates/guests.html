@@ -4,6 +4,18 @@
   <title>招待者リスト</title>
 {% endblock %}
 
+{% block head %}
+<style>
+table.guest_tb th {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: white;
+}
+</style>
+{% endblock %}
+
 {% block body %}
 
 <div class="input-group mb-3">
@@ -12,7 +24,7 @@
   <button type="button" class="btn btn-outline-secondary" id="reset_btn">全て表示</button>
 </div>
 
-<table class="table table-striped table-hover" id="guest_list">
+<table class="table table-striped table-hover guest_tb" id="guest_list">
   <thead>
     <tr>
       <th>ID</th>
