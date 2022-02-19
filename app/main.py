@@ -199,7 +199,7 @@ def download():
                     guest_id = guest_id
                 )
                 # ファイル名を 招待者様_ID.png に変更して ZIP
-                filename = kanji.replace(' ', '_') + '様_' + str(guest_id) + png
+                filename = kanji.replace(' ', '_') + '_様_' + str(guest_id) + png
                 shutil.copy('protected/' + qr, out_dir + '/' + filename)
             guests.close()
             shutil.make_archive(temp_dir + '/qr_codes', 'zip', root_dir=out_dir)
