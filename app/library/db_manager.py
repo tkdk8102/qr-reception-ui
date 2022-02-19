@@ -59,6 +59,8 @@ class Connector():
             cursor = self.__conn.cursor()
             query = f"UPDATE {self.__table} SET attendance = %s, kanji_name = %s, kana_name = %s, relation = %s, reward = %s, note = %s, parent_id = %s WHERE id = %s"
             cursor.execute(query, (attendance, kanji_name, kana_name, relation, reward, note, parent_id, guest_id))
+            query = f"UPDATE {self.__table} SET attendance = %s WHERE parent_id = %s"
+            cursor.execute(query, (attendance, guest_id))
             self.__conn.commit()
 
     def add_guest(self, gid, kanji_name, kana_name, relation='', reward='', note='', parent_id=None):
@@ -123,14 +125,14 @@ class Connector():
     def update_attend(self, gid):
         if self.__conn:
             cursor = self.__conn.cursor()
-            query = f"SELECT kanji_name FROM {self.__table} WHERE gid = %s"
+            query = f"SELECT id, kanji_name FROM {self.__table} WHERE gid = %s"
             cursor.execute(query, (gid,))
             if cursor.rowcount:
                 name = cursor.fetchone()
                 cursor = self.__conn.cursor()
-                query = f"UPDATE {self.__table} SET attendance = %s WHERE gid = %s"
-                cursor.execute(query, (1, gid,))
+                query = f"UPDATE {self.__table} SET attendance = %s WHERE gid = %s OR parent_id = %s"
+                cursor.execute(query, (1, gid, name[0]))
                 self.__conn.commit()
-                return name[0]
+                return name[1]
             else:
                 return ''
