@@ -19,6 +19,7 @@ table.guest_tb th {
 {% block body %}
 
 <div class="input-group mb-3">
+  <span class="input-group-text" id="total">表示件数: {{ guests | length }}</span>
   <input type="text" class="form-control" id="search_word" placeholder="Search">
   <button type="button" class="btn btn-outline-secondary" id="search_btn">絞り込み</button>
   <button type="button" class="btn btn-outline-secondary" id="reset_btn">全て表示</button>
@@ -203,7 +204,7 @@ table.guest_tb th {
 
 <!-- アップロードボタン Modal -->
 <div class="modal fade" id="csv_form" data-bs-backdrop="static">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <!-- Modal ヘッダー -->
       <div class="modal-header">
@@ -213,7 +214,7 @@ table.guest_tb th {
       <form id="csv_input">
         <input type="hidden" id="upload_csrf" name="csrf_token" value="{{ csrf_token() }}"/>
         <!-- Modal ボディー -->
-        <div class="d-flex justify-content-xxl-center">
+        <div class="modal-body d-flex align-items-center justify-content-center">
           <div class="my-3">
             <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv">
           </div>
@@ -389,7 +390,9 @@ function upload_file() {
 }
 
 $(function(){
+  const base_total = document.getElementById("total").innerText
   $('#search_btn').bind("click",function(){
+    var c = 0;
     var re = new RegExp($('#search_word').val());
     $('#guest_list tbody tr').each(function(){
       var tr = $(this);
@@ -397,15 +400,19 @@ $(function(){
       $('td', this).each(function(){
         var txt = $(this).html();
         if(txt.match(re) != null){
+          c += 1;
           tr.show();
+          return false;
         }
       });
+      document.getElementById("total").innerText = "表示件数: " + c;
     });
   });
 
   $('#reset_btn').bind("click",function(){
     $('#search_word').val('');
     $('#guest_list tr').show();
+    document.getElementById("total").innerText = base_total;
   });
 });
 
