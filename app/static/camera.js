@@ -120,7 +120,7 @@ SQR.reader = (() => {
     };
     if (front) {
         options.video["width"] = 1280
-        options.video["height"] = 640
+        options.video["height"] = 800
     }
 
     /**
