@@ -39,7 +39,7 @@ SQR.reader = (() => {
                 }
             }).done(function(data) {
                 // 通信成功時の処理
-                SQR.modal.open(data) // モーダルを開き 5秒後に閉じる
+                SQR.modal.open(data.kanji_name) // モーダルを開き 5秒後に閉じる
                 setTimeout(() => {
                     $('#result_modal').modal('hide');
                     SQR.reader.findQR() // QR解析を再開
